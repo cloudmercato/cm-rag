@@ -1,0 +1,4 @@
+pgvector
+llama-index-vector-stores-postgres
+llama-index-llms-ollama
+llama-index-embeddings-huggingface
