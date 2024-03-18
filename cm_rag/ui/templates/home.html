@@ -1,0 +1,24 @@
+{% extends "skeleton.html" %}
+
+{% block content %}
+<a href="{% url "query" %}">
+  <p>
+    <span>Query</span><span class="sr-only">.</span><br>
+  </p>
+</a>
+<a href="{# url "update-data" #}">
+  <p>
+    <span>Update data</span><span class="sr-only">.</span><br>
+  </p>
+</a>
+<a href="{# url "system" #}">
+  <p>
+    <span>System</span><span class="sr-only">.</span><br>
+  </p>
+</a>
+<a href="{# url "api" #}">
+  <p>
+    <span>API</span><span class="sr-only">.</span><br>
+  </p>
+</a>
+{% endblock content%}

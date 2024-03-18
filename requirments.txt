@@ -2,3 +2,6 @@ pgvector
 llama-index-vector-stores-postgres
 llama-index-llms-ollama
 llama-index-embeddings-huggingface
+dj-database-url==2.1.0
+Django==5.0.3
+djangorestframework==3.14.0

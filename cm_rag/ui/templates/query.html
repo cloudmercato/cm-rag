@@ -1,0 +1,17 @@
+{% extends "skeleton.html" %}
+
+{% block content %}
+<div class="breadcrumbs">
+<a href="{% url "home" %}">Home</a> / Query
+</div>
+<hr>
+
+
+{{ answer }}
+
+<form action="" method="POST">
+{% csrf_token %}
+{{ form.q }}
+<input type="submit" value="Submit">
+</form>
+{% endblock content%}

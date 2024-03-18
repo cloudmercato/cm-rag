@@ -1,0 +1,24 @@
+{% load static %}
+<!doctype html>
+
+<html lang="en-us" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Welcome to the Cloud Mercato RAG</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{% static "main.css" %}">
+    </head>
+    <body>
+      <header>
+        <a class="logo" href="{% url "home" %}">Jean-Cloud</a>
+      </header>
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+      <footer>
+        <div>
+	  <p>Jean-Cloud is made with  ❤️  by <a href="https://www.cloud-mercato.com" target="_blank">Cloud Mercato</a></p>
+        </div>
+      </footer>
+    </body>
+</html>
