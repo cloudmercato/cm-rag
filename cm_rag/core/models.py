@@ -22,6 +22,9 @@ class Provider(models.Model):
 
     objects = querysets.ProviderQuerySet.as_manager()
 
+    def __str__(self):
+        return self.name
+
 
 class Flavor(models.Model):
     provider = models.ForeignKey(
@@ -50,3 +53,6 @@ class Flavor(models.Model):
     extra = models.JSONField(default=dict)
 
     objects = querysets.FlavorQuerySet.as_manager()
+
+    def __str__(self):
+        return self.name

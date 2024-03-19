@@ -4,11 +4,11 @@
 <html lang="en-us" dir="ltr">
     <head>
         <meta charset="utf-8">
-        <title>Welcome to the Cloud Mercato RAG</title>
+	<title>{% block title %}{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="{% static "main.css" %}">
     </head>
-    <body>
+    <body class="{% block body_class %}{% endblock %}">
       <header>
         <a class="logo" href="{% url "home" %}">Jean-Cloud</a>
       </header>

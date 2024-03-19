@@ -1,3 +1,6 @@
+"""
+https://docs.llamaindex.ai/en/stable/examples/query_engine/SQLRouterQueryEngine.html
+"""
 from llama_index.core import SQLDatabase
 from llama_index.core.tools import QueryEngineTool
 from llama_index.core.query_engine import NLSQLTableQueryEngine
@@ -105,12 +108,17 @@ class SqlManager:
         return table_node_mapping
 
     @cached_property
+    def table_schema_objs(self):
+        return [
+            SQLTableSchema(table_name=table_name)
+            for table_name in self.sql_tables
+        ]
+
+    @cached_property
     def obj_index(self):
         table_schema_objs = []
-        for table_name in self.sql_tables:
-            table_schema_objs.append(SQLTableSchema(table_name=table_name))
         obj_index = ObjectIndex.from_objects(
-            objects=table_schema_objs,
+            objects=self.table_schema_objs,
             object_mapping=self.table_node_mapping,
             index_cls=VectorStoreIndex,
         )
@@ -120,6 +128,7 @@ class SqlManager:
     def table_retriever(self):
         table_retriever = self.obj_index.as_retriever(
             similarity_top_k=self.similarity_top_k,
+            verbose=self.verbose,
         )
         return table_retriever
 

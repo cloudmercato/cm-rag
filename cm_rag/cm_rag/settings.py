@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'core',
     'ui',
     'api',
+    'django_tables2',
 ]
 
 MIDDLEWARE = [

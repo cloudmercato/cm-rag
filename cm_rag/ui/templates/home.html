@@ -1,24 +1,26 @@
 {% extends "skeleton.html" %}
 
+{% block title %}Jean-Cloud - Home{% endblock %}
+
 {% block content %}
-<a href="{% url "query" %}">
-  <p>
-    <span>Query</span><span class="sr-only">.</span><br>
-  </p>
-</a>
-<a href="{# url "update-data" #}">
-  <p>
-    <span>Update data</span><span class="sr-only">.</span><br>
-  </p>
-</a>
-<a href="{# url "system" #}">
-  <p>
-    <span>System</span><span class="sr-only">.</span><br>
-  </p>
-</a>
-<a href="{# url "api" #}">
-  <p>
-    <span>API</span><span class="sr-only">.</span><br>
-  </p>
-</a>
+<h1>Welcome to Jean-Cloud's office</h1>
+<h1>The AI assistant by Cloud Mercato</h1>
+
+<div class="row">
+
+<div>
+  <p><a href="{% url "query" %}">Query</a></p>
+</div>
+<div>
+  <p><a href="{% url "provider-list" %}">Providers</a></p>
+  <p><a href="{% url "flavor-list" %}">Flavors</a></p>
+  <p><a href="{# url "update-data" #}">Update</a></p>
+</div>
+
+<div>
+  <p><a href="{# url "system" #}">System</a></p>
+  <p><a href="{# url "api-root" #}">API</a></p>
+</div>
+
+</div>
 {% endblock content%}

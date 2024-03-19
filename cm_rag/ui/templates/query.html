@@ -1,11 +1,12 @@
 {% extends "skeleton.html" %}
 
+{% block title %}Query{% endblock %}
+
 {% block content %}
 <div class="breadcrumbs">
 <a href="{% url "home" %}">Home</a> / Query
 </div>
 <hr>
-
 
 {{ answer }}
 
@@ -14,4 +15,4 @@
 {{ form.q }}
 <input type="submit" value="Submit">
 </form>
-{% endblock content%}
+{% endblock content %}
