@@ -3,10 +3,12 @@ from django.views.generic.base import TemplateView
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 from django.views.generic.edit import BaseFormView
 
-from django_tables2 import SingleTableView
+from django_tables2 import SingleTableView, SingleTableMixin
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from core import utils
 from core import models
+from core.qengines import SqlManager
 from ui import forms
 from ui import tables
 
@@ -35,6 +37,28 @@ class FlavorListView(ListView):
     model = models.Flavor
     table_class = tables.FlavorTable
 
+
+class VectorListView(SingleTableMixin, TemplateView):
+    template_name = "model_list.html"
+    table_class = tables.VectorTable
+
+    @property
+    def table_data(self):
+        sql_manager = SqlManager()
+        Session = scoped_session(sessionmaker(bind=sql_manager.engine))
+        session = Session()
+        response = session.execute('SELECT * FROM data_cm_vectors;')
+        return response.mappings()
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        opts = {
+            'verbose_name_plural': 'vectors',
+        }
+        context.update(
+            opts=opts,
+        )
+        return context
 
 
 class QueryView(TemplateResponseMixin, BaseFormView):
