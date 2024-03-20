@@ -1,11 +1,7 @@
-import sys
-import logging
-
 from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
-
-from core import indexes
+from core.qengines import VectorIndexManager
 from core import documents
+from core import utils
 
 
 class Command(BaseCommand):
@@ -16,16 +12,20 @@ class Command(BaseCommand):
         parser.add_argument('-f', '--flush', action="store_true")
 
     def handle(self, *args, **options):
-        logging.basicConfig(stream=sys.stdout, level=40-options['verbosity']*10)
-        logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+        utils.set_log_verbosity(options['verbosity'])
+        manager = VectorIndexManager(
+            embed_dim=options['embed_dim'],
+            verbose=options['verbosity'],
+        )
         show_progress = options['verbosity'] > 2
 
         if options['flush']:
-            indexes.flush_index()
+            self.stdout.write('Flushing index')
+            manager.flush_index()
 
         docs, nodes = documents.DocumentManager().get_documents()
-        index = indexes.VectorIndexManager().update_index(
+        self.stdout.write('Updating index')
+        index = manager.update_index(
             documents=docs,
-            embed_dim=options['embed_dim'],
-            show_progress=show_progress,
         )
+        self.stdout.write('Done')

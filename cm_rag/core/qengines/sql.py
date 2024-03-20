@@ -18,6 +18,8 @@ from django.conf import settings
 from django.utils.functional import cached_property
 from django.apps import apps
 
+from core.llm import OllamaManager
+
 
 class SqlManager:
     def __init__(
@@ -83,10 +85,16 @@ class SqlManager:
         return sql_database
 
     @cached_property
+    def ollama(self):
+        return OllamaManager(
+        ).sql_ollama
+
+    @cached_property
     def query_engine(self):
         query_engine = NLSQLTableQueryEngine(
             sql_database=self.sql_database,
             tables=self.sql_tables,
+            llm=self.ollama,
             verbose=self.verbose,
         )
         return query_engine

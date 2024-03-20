@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
-from core import indexes
+from core.qengines import VectorIndexManager
+from core import utils
 
 
 class Command(BaseCommand):
@@ -9,4 +10,9 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        indexes.flush_index()
+        utils.set_log_verbosity(options['verbosity'])
+        manager = VectorIndexManager(
+            verbose=options['verbosity'],
+        )
+        self.stdout.write('Flushing index')
+        manager.flush_index()

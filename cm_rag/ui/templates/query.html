@@ -8,11 +8,48 @@
 </div>
 <hr>
 
-{{ answer }}
+{% if response %}
+<div class="msg-block msg-info">{{ response.response|linebreaks }}</div>
+{% endif %}
+
+{% if error %}
+<div class="msg-block msg-error">{{ error|linebreaks }}</div>
+{% endif %}
 
 <form action="" method="POST">
 {% csrf_token %}
+<div class="row">
+  <div>Query engine: {{ form.query_engine }}</div>
+  <div>Similarity top-K: {{ form.similarity_top_k }}</div>
+  <div>Temperature: {{ form.temperature }}</div>
+</div>
+<hr>
 {{ form.q }}
 <input type="submit" value="Submit">
 </form>
+
+{% if response %}
+<hr>
+<div class="row">
+ <div>
+  <h2>Metadata</h2>
+  <ul class="no-style">
+    {% for key, value in response.metadata.items %}
+    <li><b>{{ key }}</b>: {{ value }}</li>
+    {% endfor %}
+  </ul>
+ </div>
+ <div>
+  <h2>Source(s)</h2>
+  {{ response.get_formatted_sources|linebreaks }}
+
+  <h2>Source nodes</h2>
+  <ul class="no-style">
+    {% for node in response.source_nodes %}
+    <li>{{ node }}</li>
+    {% endfor %}
+  </ul>
+ </div>
+</div>
+{% endif %}
 {% endblock content %}

@@ -9,6 +9,7 @@ from django.utils.functional import cached_property
 
 from core.qengines.vectors import VectorIndexManager
 from core.qengines.sql import SqlManager
+from core.llm import OllamaManager
 
 
 class RouterManager:
@@ -53,9 +54,15 @@ class RouterManager:
         return query_engine
 
     @cached_property
+    def subq_ollama(self):
+        return OllamaManager(
+        ).subquestion_ollama
+
+    @cached_property
     def subquestion_query_engine(self):
         query_engine = SubQuestionQueryEngine.from_defaults(
             query_engine_tools=self.tools,
+            llm=self.subq_ollama,
             use_async=self.use_async,
             verbose=self.verbose,
         )

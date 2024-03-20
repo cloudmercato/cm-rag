@@ -5,6 +5,7 @@ from django.views.generic.edit import BaseFormView
 
 from django_tables2 import SingleTableView, SingleTableMixin
 from sqlalchemy.orm import sessionmaker, scoped_session
+from psycopg2 import errors as pg_errors
 
 from core import utils
 from core import models
@@ -47,7 +48,12 @@ class VectorListView(SingleTableMixin, TemplateView):
         sql_manager = SqlManager()
         Session = scoped_session(sessionmaker(bind=sql_manager.engine))
         session = Session()
-        response = session.execute('SELECT * FROM data_cm_vectors;')
+        try:
+            response = session.execute('SELECT * FROM data_cm_vectors;')
+        except ProgrammingError as err:
+            return []
+        except pg_errors.UndefinedTable as err:
+            return []
         return response.mappings()
 
     def get_context_data(self):
@@ -66,13 +72,17 @@ class QueryView(TemplateResponseMixin, BaseFormView):
     form_class = forms.QueryForm
 
     def form_valid(self, form):
-        q = form.cleaned_data['q']
-        query_engine = utils.get_query_engine()
-        response = query_engine.query(q)
-        answer = response.response
-
         context = self.get_context_data()
-        context['answer'] = answer
+        qengine_kwargs = form.cleaned_data.copy()
+        q = qengine_kwargs.pop('q')
+        query_engine = utils.get_query_engine(**qengine_kwargs)
+
+        try:
+            context['response'] = query_engine.query(q)
+        except ValueError as err:
+            context['error'] = err
+        except Exception as err:
+            context['error'] = err
 
         return render(
             request=self.request,

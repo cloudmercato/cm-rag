@@ -1,5 +1,6 @@
 import pandas as pd
 import wikipedia
+from wikipedia import exceptions as wiki_exceptions
 
 from llama_index.core import Document
 from llama_index.core import SimpleDirectoryReader
@@ -26,10 +27,11 @@ class DocumentManager:
     def provider_wiki_docs(self):
         providers = models.Provider.objects.values_list('name', flat=True)
         wiki_docs = []
+        wiki_errors = (wiki_exceptions.PageError, wiki_exceptions.DisambiguationError)
         for provider in providers:
             try:
                 wiki_docs += WikipediaReader().load_data(pages=[provider])
-            except wikipedia.exceptions.PageError as err:
+            except wiki_errors as err:
                 print(err)
         return wiki_docs
 
@@ -65,7 +67,7 @@ class DocumentManager:
             })
             documents.append(doc)
 
-        text = f"Cloud Mercato's database counts {df.shape[0]}): "
+        text = f"Cloud Mercato's database counts {df.shape[0]}) providers: "
         text += ' '.join(df['name'].values)
         doc = Document(text=text)
         documents.append(doc)
@@ -140,8 +142,8 @@ class DocumentManager:
         # ])
         # documents += cm_site_reader.load_data()
 
-        # docs, ns = self.get_provider_documents(update, concat_rows)
-        # documents += docs
+        docs, ns = self.get_provider_documents(update, concat_rows)
+        documents += docs
         # nodes += ns
         # docs, ns = self.get_flavor_documents(update, concat_rows)
         # documents += docs
