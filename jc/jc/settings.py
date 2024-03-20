@@ -17,7 +17,7 @@ def _get_config(file_):
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CONFIG_FILE =  os.environ.get('RAG_CONFIG', '/etc/cm-rag.json')
+CONFIG_FILE =  os.environ.get('RAG_CONFIG', '/etc/jc.json')
 CONFIG = {
     'DEFAULT_OLLAMA_MODEL': 'mistral',
     'DEFAULT_TEMPERATURE': .75,
@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'cm_rag.urls'
+ROOT_URLCONF = 'jc.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'cm_rag.wsgi.application'
+WSGI_APPLICATION = 'jc.wsgi.application'
 
 DATABASE_URL = CONFIG['DATABASE_URL']
 DATABASES = {}

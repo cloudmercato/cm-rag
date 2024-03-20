@@ -1,7 +1,7 @@
 {% extends "skeleton.html" %}
 {% load render_table from django_tables2 %}
 
-{% block title %}{{ opts.verbose_name_plural.captfirst }}{% endblock %}
+{% block title %}{{ opts.verbose_name_plural|capfirst }}{% endblock %}
 
 {% block content %}
 <div class="breadcrumbs">

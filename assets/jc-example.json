@@ -1,0 +1,9 @@
+{
+    "SECRET_KEY": "azpod,zapd,zaod,ozadpo,pza,dpz,apod,pza,ddoapaze(3",
+    "DEBUG": true,
+    "ALLOWED_HOSTS": ["*"],
+    "DATABASE_URL": "postgresql://ai:ai@localhost:5432/ai",
+    "SOURCE_TOKEN": "<your_token>",
+    "DATA_DIR": "/opt/jc-data/",
+    "SYSTEM_PROMPT": "/etc/jc-system-prompt"
+}
