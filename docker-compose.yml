@@ -1,0 +1,29 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=ai
+      - POSTGRES_USER=ai
+      - POSTGRES_PASSWORD=ai
+  ollama:
+    image: ollama/ollama:0.1.29
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+  jc:
+    build: .
+    volumes:
+      - .:/jc
+      - ./assets/docker-jc.json:/etc/jc.json
+      - ./assets/system-prompt:/etc/jc-system-prompt
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - ollama

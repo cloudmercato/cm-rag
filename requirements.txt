@@ -1,7 +1,9 @@
+llama-index
 llama-index-vector-stores-postgres
 llama-index-llms-ollama
 llama-index-embeddings-huggingface
 llama-index-readers-wikipedia
+llama-index-readers-web
 
 pgvector
 wikipedia==1.4.0

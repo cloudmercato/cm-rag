@@ -42,15 +42,6 @@ header {
   font-size: 1.375rem;
   text-decoration: none;
 }
-.sr-only {
-  clip: rect(1px, 1px, 1px, 1px);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}
 .q-input {
   width: 100%;
   resize: none;
@@ -145,8 +136,6 @@ table td {
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
 }
 .row div {
   -ms-flex-preferred-size: 0;

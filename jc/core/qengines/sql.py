@@ -47,26 +47,6 @@ class SqlManager:
         return tables
 
     @cached_property
-    def models_metadata(self):
-        return {
-            m._meta.model_name: {
-                'primary_key': m._meta.pk.name,
-                'verbose_name': m._meta.verbose_name,
-                'verbose_name_plural': m._meta.verbose_name_plural,
-                'db_table': m._meta.db_table,
-                'fields': {
-                    f.name : {
-                        'name': f.name,
-                        'verbose_name': f.verbose_name,
-                        'help_text': f.help_text,
-                    }
-                    for f in m._meta.fields
-                }
-            }
-            for m in self.models
-        }
-
-    @cached_property
     def sql_metadata(self):
         metadata = MetaData()
         metadata.reflect(
@@ -116,9 +96,23 @@ class SqlManager:
         return table_node_mapping
 
     @cached_property
+    def table_contexts(self):
+        table_contexts = {}
+        for model in self.models:
+            meta = model._meta
+            context = "{meta.verbose_name} or {meta.verbose_name_plural} in the plural, contains the following field:\n"
+            for field in meta.fields:
+                context += f"{field.verbose_name} ({field.name}): {field.help_text}\n"
+            table_contexts[meta.db_table] = context
+        return table_contexts
+
+    @cached_property
     def table_schema_objs(self):
         return [
-            SQLTableSchema(table_name=table_name)
+            SQLTableSchema(
+                table_name=table_name,
+                context_str=self.table_contexts[table_name],
+            )
             for table_name in self.sql_tables
         ]
 
@@ -145,5 +139,6 @@ class SqlManager:
         retriever_query_engine = SQLTableRetrieverQueryEngine(
             sql_database=self.sql_database,
             table_retriever=self.table_retriever,
+            llm=self.ollama,
         )
         return retriever_query_engine
