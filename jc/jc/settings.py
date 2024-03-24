@@ -93,6 +93,9 @@ LOGGING['loggers'].update({
     'httpx': {
         'level': 'WARNING',
     },
+    'asyncio': {
+        'level': 'WARNING',
+    },
 })
 
 SOURCE_URL = CONFIG['SOURCE_URL']

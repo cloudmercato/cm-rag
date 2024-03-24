@@ -11,6 +11,7 @@ from llama_index.core.objects import (
     SQLTableSchema,
 )
 from llama_index.core import VectorStoreIndex
+from llama_index.core.indices.struct_store.sql_retriever import DefaultSQLParser
 
 from sqlalchemy import create_engine, MetaData
 
@@ -19,6 +20,13 @@ from django.utils.functional import cached_property
 from django.apps import apps
 
 from core.llm import OllamaManager
+
+
+class UnescapeSQLParser(DefaultSQLParser):
+    def parse_response_to_sql(self, *args, **kwargs):
+        response = super().parse_response_to_sql(*args, **kwargs)
+        response = response.replace('\\', '')
+        return response
 
 
 class SqlManager:
@@ -77,6 +85,7 @@ class SqlManager:
             llm=self.ollama,
             verbose=self.verbose,
         )
+        query_engine._sql_retriever._sql_parser = UnescapeSQLParser()
         return query_engine
 
     @cached_property
@@ -100,7 +109,7 @@ class SqlManager:
         table_contexts = {}
         for model in self.models:
             meta = model._meta
-            context = "{meta.verbose_name} or {meta.verbose_name_plural} in the plural, contains the following field:\n"
+            context = f"{meta.verbose_name} or {meta.verbose_name_plural} in the plural, contains the following field:\n"
             for field in meta.fields:
                 context += f"{field.verbose_name} ({field.name}): {field.help_text}\n"
             table_contexts[meta.db_table] = context
@@ -141,4 +150,5 @@ class SqlManager:
             table_retriever=self.table_retriever,
             llm=self.ollama,
         )
+        retriever_query_engine._sql_retriever._sql_parser = UnescapeSQLParser()
         return retriever_query_engine

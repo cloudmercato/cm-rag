@@ -7,5 +7,6 @@
     "SOURCE_TOKEN": null,
     "DATA_DIR": "/jc-data/",
     "SYSTEM_PROMPT": "/jc-system-prompt",
-    "OLLAMA_BASE_URL": "http://ollama:11434"
+    "OLLAMA_BASE_URL": "http://ollama:11434",
+    "DEFAULT_OLLAMA_MODEL": "mixtral"
 }

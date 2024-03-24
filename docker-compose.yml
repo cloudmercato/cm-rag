@@ -22,6 +22,7 @@ services:
       - .:/jc
       - ./assets/docker-jc.json:/etc/jc.json
       - ./assets/system-prompt:/etc/jc-system-prompt
+      - /opt/jc-data:/jc-data
     ports:
       - "8000:8000"
     depends_on:

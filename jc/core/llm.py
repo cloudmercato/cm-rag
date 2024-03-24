@@ -36,6 +36,7 @@ class OllamaManager:
     @cached_property
     def sql_ollama(self):
         return Ollama(
+            system_prompt=self.system_prompt,
             model=self.model,
             temperature=self.sql_temperature,
             base_url=self.base_url,
@@ -45,6 +46,7 @@ class OllamaManager:
     @cached_property
     def subquestion_ollama(self):
         return Ollama(
+            system_prompt=self.system_prompt,
             model=self.model,
             temperature=self.subq_temperature,
             base_url=self.base_url,

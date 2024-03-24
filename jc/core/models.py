@@ -84,7 +84,7 @@ class Flavor(models.Model):
     )
     ram = models.PositiveIntegerField(
         verbose_name="RAM",
-        help_text="Amount of RAM in MB",
+        help_text="Amount of memory in MB",
     )
     root_volume_size = models.PositiveIntegerField(
         verbose_name="root volume size",

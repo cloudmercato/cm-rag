@@ -6,6 +6,7 @@ from django.views.generic.edit import BaseFormView
 from django_tables2 import SingleTableView, SingleTableMixin
 from sqlalchemy.orm import sessionmaker, scoped_session
 from psycopg2 import errors as pg_errors
+from sqlalchemy.sql import text
 
 from core import utils
 from core import models
@@ -49,8 +50,8 @@ class VectorListView(SingleTableMixin, TemplateView):
         Session = scoped_session(sessionmaker(bind=sql_manager.engine))
         session = Session()
         try:
-            response = session.execute('SELECT * FROM data_cm_vectors;')
-        except ProgrammingError as err:
+            response = session.execute(text('SELECT * FROM data_cm_vectors;'))
+        except pg_errors.ProgrammingError as err:
             return []
         except pg_errors.UndefinedTable as err:
             return []
