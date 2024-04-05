@@ -8,6 +8,7 @@ QUERY_ENGINES = (
     ('vector', "Vector"),
     ('sql', "SQL database"),
     ('sql-retriever', "SQL retriever"),
+    ('kg', "Knowledge graph"),
 )
 
 class QueryForm(forms.Form):

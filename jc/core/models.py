@@ -36,7 +36,7 @@ class Provider(models.Model):
         max_length=2,
         null=True, blank=True,
         verbose_name="headquarters",
-        help_text="Origin country in ISO ISO 3166-1 format",
+        help_text="Origin country in ISO 3166-1 format",
     )
 
     extra = models.JSONField(default=dict)
@@ -101,8 +101,8 @@ class Flavor(models.Model):
     gpu_model = models.CharField(
         max_length=100,
         null=True, blank=True,
-        verbose_name="GPU",
-        help_text="GPU model",
+        verbose_name="GPU model",
+        help_text="Accurate model name as given by hardware vendor",
     )
 
     max_bandwidth = models.PositiveIntegerField(

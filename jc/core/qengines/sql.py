@@ -7,11 +7,11 @@ from llama_index.core.query_engine import NLSQLTableQueryEngine
 from llama_index.core.indices.struct_store import SQLTableRetrieverQueryEngine
 from llama_index.core.objects import (
     SQLTableNodeMapping,
-    ObjectIndex,
     SQLTableSchema,
 )
 from llama_index.core import VectorStoreIndex
 from llama_index.core.indices.struct_store.sql_retriever import DefaultSQLParser
+from llama_index.core.objects import ObjectIndex
 
 from sqlalchemy import create_engine, MetaData
 
@@ -20,6 +20,7 @@ from django.utils.functional import cached_property
 from django.apps import apps
 
 from core.llm import OllamaManager
+from core.indices import IndexManager
 
 
 class UnescapeSQLParser(DefaultSQLParser):
@@ -89,6 +90,18 @@ class SqlManager:
         return query_engine
 
     @cached_property
+    def no_synth_query_engine(self):
+        query_engine = NLSQLTableQueryEngine(
+            sql_database=self.sql_database,
+            tables=self.sql_tables,
+            llm=self.ollama,
+            synthesize_response=False,
+            verbose=self.verbose,
+        )
+        query_engine._sql_retriever._sql_parser = UnescapeSQLParser()
+        return query_engine
+
+    @cached_property
     def tools(self):
         desc = "Useful for translating a natural language query into a SQL query over tables:"
         for model in self.models:
@@ -126,6 +139,18 @@ class SqlManager:
         ]
 
     @cached_property
+    def index_manager(self):
+        return IndexManager(
+        )
+
+    @cached_property
+    def obj_index(self):
+        obj_index = self.index_manager.get_obj_index(
+            object_mapping=self.table_node_mapping,
+        )
+        return obj_index
+
+    @cached_property
     def obj_index(self):
         table_schema_objs = []
         obj_index = ObjectIndex.from_objects(
@@ -134,6 +159,11 @@ class SqlManager:
             index_cls=VectorStoreIndex,
         )
         return obj_index
+
+
+    def build_index(self):
+        nodes = self.table_node_mapping.to_nodes(self.table_schema_objs)
+        self.obj_index.from_objects(nodes).persist()
 
     @cached_property
     def table_retriever(self):
@@ -149,6 +179,8 @@ class SqlManager:
             sql_database=self.sql_database,
             table_retriever=self.table_retriever,
             llm=self.ollama,
+            synthesize_response=True,
+            verbose=self.verbose,
         )
         retriever_query_engine._sql_retriever._sql_parser = UnescapeSQLParser()
         return retriever_query_engine

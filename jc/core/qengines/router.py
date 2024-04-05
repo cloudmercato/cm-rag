@@ -9,6 +9,7 @@ from django.utils.functional import cached_property
 
 from core.qengines.vectors import VectorIndexManager
 from core.qengines.sql import SqlManager
+from core.qengines.kgraph import KnowledgeGraphManager
 from core.llm import OllamaManager
 
 
@@ -30,6 +31,13 @@ class RouterManager:
     @cached_property
     def sql_manager(self):
         return SqlManager()
+
+    @cached_property
+    def kg_manager(self):
+        return KnowledgeGraphManager(
+            similarity_top_k=self.similarity_top_k,
+            verbose=self.verbose,
+        )
 
     @cached_property
     def tools(self):

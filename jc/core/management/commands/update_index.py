@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
-from core.qengines import VectorIndexManager
-from core import documents
+from core.indices import IndexManager
+from core.documents import DocumentManager
 from core import utils
 
 
@@ -13,19 +13,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         utils.set_log_verbosity(options['verbosity'])
-        manager = VectorIndexManager(
-            embed_dim=options['embed_dim'],
+        manager = IndexManager(
             verbose=options['verbosity'],
         )
         show_progress = options['verbosity'] > 2
 
         if options['flush']:
             self.stdout.write('Flushing index')
-            manager.flush_index()
+            manager.flush_indices()
 
-        docs, nodes = documents.DocumentManager().get_documents()
-        self.stdout.write('Updating index')
-        index = manager.update_index(
-            documents=docs,
+        self.stdout.write('Updating indices')
+        index = manager.update_indices(
         )
         self.stdout.write('Done')

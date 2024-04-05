@@ -6,7 +6,9 @@
     "SOURCE_URL": null,
     "SOURCE_TOKEN": null,
     "DATA_DIR": "/jc-data/",
+    "STORAGE_DIR": "/jc-storage/",
     "SYSTEM_PROMPT": "/jc-system-prompt",
     "OLLAMA_BASE_URL": "http://ollama:11434",
-    "DEFAULT_OLLAMA_MODEL": "mixtral"
+    "DEFAULT_OLLAMA_MODEL": "mixtral",
+    "FALKORDB_URL": "redis://graph:6379"
 }

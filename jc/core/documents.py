@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import wikipedia
 from wikipedia import exceptions as wiki_exceptions
@@ -11,24 +13,51 @@ from llama_index.readers.file import PandasCSVReader
 from llama_index.readers.file import CSVReader
 from llama_index.readers.web import UnstructuredURLLoader
 from llama_index.readers.wikipedia import WikipediaReader
+from llama_index.core.storage.docstore import SimpleDocumentStore
 
+from django.utils.functional import cached_property
 from django.conf import settings
 
-from core import files
+from core.storage import StorageManager
+from core.files import FileManager
 from core import data
 from core import models
 
 
 class DocumentManager:
-    def __init__(self):
-        self.files = files.FileManager()
+    def __init__(
+        self,
+        embed_dim=settings.DEFAULT_EMBED_DIM,
+        verbose=True
+    ):
+        self.embed_dim = embed_dim
+        self.verbose = verbose
 
-    @property
+    @cached_property
+    def storage_manager(self):
+        return StorageManager(
+            embed_dim=self.embed_dim,
+            verbose=self.verbose,
+        )
+
+    @cached_property
+    def files(self):
+        return FileManager()
+
+    @cached_property
+    def store(self):
+        return self.storage_manager.docstore
+
+    @cached_property
+    def documents(self):
+        return self.store._kvstore.get_all()
+
+    @cached_property
     def provider_wiki_docs(self):
         providers = models.Provider.objects.values_list('name', flat=True)
         wiki_docs = []
         wiki_errors = (wiki_exceptions.PageError, wiki_exceptions.DisambiguationError)
-        for provider in providers:
+        for provider in providers[:3]:
             try:
                 wiki_docs += WikipediaReader().load_data(pages=[provider])
             except wiki_errors as err:
@@ -58,7 +87,7 @@ class DocumentManager:
                 'name': row['name'],
                 'short_name': row.short_name,
             }
-            if row.Headquarters not in ('nan', ):
+            if row.Headquarters:
                 text += f" With headquarters in {row.Headquarters}."
 
             doc_id = f"{row['name']}-details"
@@ -76,7 +105,7 @@ class DocumentManager:
 
     def get_flavor_index_node(self, docs):
         idx_node = IndexNode(
-            text="This node providers information about the flavor catalog",
+            text="This node provides information about the flavor catalog",
             index_id='flavors',
         )
         return idx_node
@@ -142,13 +171,16 @@ class DocumentManager:
         # ])
         # documents += cm_site_reader.load_data()
 
-        docs, ns = self.get_provider_documents(update, concat_rows)
-        documents += docs
+        # docs, ns = self.get_provider_documents(update, concat_rows)
+        # documents += docs
         # nodes += ns
         # docs, ns = self.get_flavor_documents(update, concat_rows)
         # documents += docs
         # nodes += ns
 
-        documents += self.provider_wiki_docs
+        # documents += self.provider_wiki_docs
 
-        return documents, nodes
+        return documents[:10], nodes
+
+    def save(self, documents):
+        self.store.add_documents(documents)

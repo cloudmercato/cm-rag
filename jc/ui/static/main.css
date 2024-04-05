@@ -8,7 +8,7 @@ header {
   border-bottom: 1px solid #efefef;
 }
 body {
-  max-width: 960px;
+  max-width: 90%;;
   color: #525252;
   font-family: "Segoe UI", system-ui, sans-serif;
   margin: 0 auto;
@@ -123,6 +123,9 @@ table td {
 .w-100 {
   width: 100%;
 }
+.w-75 {
+  width: 75%;
+}
 .w-50 {
   width: 50%;
 }
@@ -139,7 +142,6 @@ table td {
 }
 .row div {
   -ms-flex-preferred-size: 0;
-  flex-basis: 0;
   -webkit-box-flex: 1;
   -ms-flex-positive: 1;
   flex-grow: 1;

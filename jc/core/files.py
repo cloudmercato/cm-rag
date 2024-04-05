@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 from django.conf import settings
 from core import clients
 from core import data
@@ -48,3 +49,7 @@ class FileManager:
     def open(self, name):
         filename = self.make_filename(name)
         return open(filename)
+
+    def read_csv(self, name):
+        filename = self.make_filename(name)
+        return pd.read_csv(filename)

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from core.qengines import VectorIndexManager
+from core.storage import StorageManager
 from core import utils
 
 
@@ -11,8 +11,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         utils.set_log_verbosity(options['verbosity'])
-        manager = VectorIndexManager(
+        manager = StorageManager(
             verbose=options['verbosity'],
         )
         self.stdout.write('Flushing index')
-        manager.flush_index()
+        manager.flush()

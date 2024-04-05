@@ -54,4 +54,8 @@ def get_query_engine(
         query_engine = router_manager.sql_manager.query_engine
     elif query_engine == 'sql-retriever':
         query_engine = router_manager.sql_manager.retriever_query_engine
+    elif query_engine == 'kg':
+        query_engine = router_manager.kg_manager.query_engine
+    elif query_engine == 'kg-retriever':
+        query_engine = router_manager.kg_manager.retriever_query_engine
     return query_engine

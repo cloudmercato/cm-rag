@@ -15,6 +15,8 @@ QENGINES_CHOICES = (
     'vector',
     'sql',
     'sql-retriever',
+    'kg',
+    'kg-retriever',
 )
 
 
@@ -42,4 +44,6 @@ class Command(BaseCommand):
             verbose=options['verbosity']>1,
         )
         response = query_engine.query(options['query'])
-        print(response.response)
+        print('\n\n')
+        print(f"< {options['query']}")
+        print(f"> {response.response}")

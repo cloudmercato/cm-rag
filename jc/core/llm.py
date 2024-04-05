@@ -34,6 +34,15 @@ class OllamaManager:
         )
 
     @cached_property
+    def kg_ollama(self):
+        return Ollama(
+            model=self.model,
+            temperature=self.sql_temperature,
+            base_url=self.base_url,
+            request_timeout=60.0,
+        )
+
+    @cached_property
     def sql_ollama(self):
         return Ollama(
             system_prompt=self.system_prompt,

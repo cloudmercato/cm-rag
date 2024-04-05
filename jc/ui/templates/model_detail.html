@@ -1,0 +1,20 @@
+{% extends "skeleton.html" %}
+{% block title %}{{ opts.verbose_name_plural|capfirst }}{% endblock %}
+
+{% block content %}
+<div class="breadcrumbs">
+  <a href="{% url "home" %}">Home</a> /
+  <a href="{{ list_url }}">{{ opts.verbose_name_plural|capfirst }}</a> /
+  {{ verbose }}
+</div>
+<hr>
+
+<h1>{{ instance.key }}</h1>
+{% for key, value in instance.items %}
+<div class="row">
+  <div class="w-25">{{ key }}</div>
+  <div class="w-75">{{ value }}</div>
+</div>
+{% endfor %}
+
+{% endblock content %}

@@ -8,7 +8,7 @@ WORKDIR /jc
 COPY requirements.txt /jc/
 
 RUN pip install -r requirements.txt
-RUN mkdir -p /jc-data/
+RUN mkdir /jc-data/ /jc-storage/
 
 COPY . /jc/
 COPY ./assets/docker-jc.json /etc/jc.json

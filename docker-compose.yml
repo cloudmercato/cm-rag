@@ -7,6 +7,8 @@ services:
       - POSTGRES_DB=ai
       - POSTGRES_USER=ai
       - POSTGRES_PASSWORD=ai
+  graph:
+    image: falkordb/falkordb:edge
   ollama:
     image: ollama/ollama:0.1.29
     deploy:
@@ -23,8 +25,10 @@ services:
       - ./assets/docker-jc.json:/etc/jc.json
       - ./assets/system-prompt:/etc/jc-system-prompt
       - /opt/jc-data:/jc-data
+      - /opt/jc-storage:/jc-storage
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - graph
       - ollama
