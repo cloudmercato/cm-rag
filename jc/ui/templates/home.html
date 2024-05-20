@@ -8,21 +8,33 @@
 
 <div class="row">
 
-<div>
-  <p><a href="{% url "query" %}">Query</a></p>
+<div class="w-50">
+  <h3><a href="{% url "query" %}">Query insights</a></h3>
+  <form action="{% url "query" %}" method="POST">
+    {% csrf_token %}
+    <textarea class="q-input w-95" name="q"></textarea>
+    <input type="submit">
+    <input type="hidden" name="query_engine" value="sql-retriever">
+    <input type="hidden" name="similarity_top_k" value="4">
+    <input type="hidden" name="temperature" value="0.5">
+  </form>
 </div>
-<div>
+
+<div class="w-25">
+  <h3><b>Indices:</b></h3>
   <p><a href="{% url "index-list" %}">Indices</a></p>
   <p><a href="{% url "vector-list" %}">Vectors</a></p>
   <p><a href="{% url "document-list" %}">Documents</a></p>
   <p><a href="{% url "knowledge-graph" %}">Knowledge graph</a></p>
   <hr>
+  <h3><b>Database:</b></h3>
   <p><a href="{% url "provider-list" %}">Providers</a></p>
   <p><a href="{% url "flavor-list" %}">Flavors</a></p>
   <p><a href="{# url "update-data" #}">Update</a></p>
 </div>
 
-<div>
+<div class="w-25">
+  <h3><b>Misc.</b></h3>
   <p><a href="{# url "system" #}">System</a></p>
   <p><a href="{# url "api-root" #}">API</a></p>
 </div>

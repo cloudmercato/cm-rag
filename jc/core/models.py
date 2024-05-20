@@ -1,4 +1,5 @@
 from django.db import models
+from django_countries.fields import CountryField
 from core import querysets
 
 
@@ -32,7 +33,7 @@ class Provider(models.Model):
         verbose_name="URL",
         help_text="Official main URL",
     )
-    headquarters = models.CharField(
+    headquarters = CountryField(
         max_length=2,
         null=True, blank=True,
         verbose_name="headquarters",

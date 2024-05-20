@@ -64,41 +64,27 @@ class DocumentManager:
                 print(err)
         return wiki_docs
 
-    def get_provider_documents(self, update=False, concat_rows=False):
-        csv_reader = PandasCSVReader(
-            concat_rows=concat_rows,
-        )
-
-        name = 'providers'
-        self.files.download(name, update=update)
-        filename = self.files.make_filename(name)
+    def get_provider_documents(self):
         documents, nodes = [], []
-
-        df = pd.read_csv(filename)
-        for idx, row in df.iterrows():
-            doc_id = f"{row['name']}"
-            text = row['name']
+        providers = models.Provider.objects.all()
+        # Create a doc describing the providers
+        for provider in providers:
+            doc_id = f"{provider.slug}-details"
+            text = provider.name
+            if provider.short_name and provider.short_name != provider.name:
+                text += f' , also known as {provider.short_name},'
+            if provider.kind:
+                text += f' is a {provider.kind} cloud'
+            if provider.headquarters:
+                text += f' from {provider.headquarters}'
+            text += '.'
             doc = Document(text=text, doc_id=doc_id, extra_info={
-                'short name': row['short_name'],
             })
             documents.append(doc)
-
-            text = "%(name)s also known as %(short_name)s is a cloud provider." % {
-                'name': row['name'],
-                'short_name': row.short_name,
-            }
-            if row.Headquarters:
-                text += f" With headquarters in {row.Headquarters}."
-
-            doc_id = f"{row['name']}-details"
-            doc = Document(text=text, doc_id=doc_id, extra_info={
-                
-            })
-            documents.append(doc)
-
-        text = f"Cloud Mercato's database counts {df.shape[0]}) providers: "
-        text += ' '.join(df['name'].values)
-        doc = Document(text=text)
+        # Summary doc
+        text = f"Cloud Mercato's database counts {providers.count()} providers: "
+        text += ' '.join(providers.values_list('name', flat=True))
+        doc = Document(text=text, doc_id='cloud-mercato-providers')
         documents.append(doc)
 
         return documents, nodes
@@ -110,48 +96,34 @@ class DocumentManager:
         )
         return idx_node
 
-    def get_flavor_documents(self, update=False, concat_rows=False):
-        name = 'flavors'
+    def get_flavor_documents(self):
         documents, nodes = [], []
-        self.files.download(name, update=update)
-        filename = self.files.make_filename(name)
-
-        csv_reader = PandasCSVReader(
-            concat_rows=concat_rows,
-        )
-        documents += csv_reader.load_data(filename)
-
-        df = pd.read_csv(filename)
-
-        archs = df[df.Arch.notna()].Arch.unique()
+        flavors = models.Flavor.objects\
+            .select_related('provider')\
+            .all()
+        # Add archs
+        archs = flavors\
+            .filter(arch__isnull=False)\
+            .values_list('arch', flat=True).distinct()
         for arch in archs:
             doc = Document(text=arch, doc_id=arch, extra_info={})
             documents.append(doc)
-
-        cpus = df.CPU.unique()
-        for cpu in cpus:
-            doc_id = f"{cpu}-cpu" 
-            text = f"{cpu} CPU" + ('s' if cpu>1 else '')
-            doc = Document(text=text, doc_id=doc_id, extra_info={})
-            documents.append(doc)
-
-        for idx, row in df.iterrows():
-            text = "%(name)s is a %(type)s flavor sold by %(provider)s." % {
-                'name': row.Name,
-                'type': row.Type,
-                'provider': row.Provider,
-            }
-            text += " It has %(cpu)s CPU(s) and %(ram)sMB of memory powered by %(arch)s architecture." % {
-                'cpu': row.CPU,
-                'ram': row.RAM,
-                'arch': row.Arch,
-            }
-            doc_id = f"{row.Provider}/{row.Name}"
+        # Doc per flavor
+        for flavor in flavors:
+            doc_id = f"{flavor.provider.slug}-{flavor.slug}-details"
+            text = f"{flavor.name} is a flavor provided by {flavor.provider.name}."
+            if flavor.type:
+                text += " It is a {flavor.type} with {flavor.cpu} CPU(s) and {flavor.ram} MB of RAM."
+            if flavor.arch:
+                text += " It is powered by a %(flavor.arch)s architecture."
+            if flavor.gpu:
+                text += " It has {flavor.gpu}x {flavor.gpu_model} GPU(s)"
             doc = Document(text=text, doc_id=doc_id, extra_info={
-                'provider': row.Provider,
-                'cpu-number': row.CPU,
             })
-            documents.append(doc)
+        # Summary doc
+        text = f"Cloud Mercato's database counts {flavors.count()} flavors."
+        doc = Document(text=text, doc_id='cloud-mercato-flavors')
+        documents.append(doc)
 
         return documents, nodes
 
@@ -171,16 +143,17 @@ class DocumentManager:
         # ])
         # documents += cm_site_reader.load_data()
 
-        # docs, ns = self.get_provider_documents(update, concat_rows)
-        # documents += docs
-        # nodes += ns
-        # docs, ns = self.get_flavor_documents(update, concat_rows)
-        # documents += docs
-        # nodes += ns
+        docs, ns = self.get_provider_documents()
+        documents += docs
+        nodes += ns
+
+        docs, ns = self.get_flavor_documents()
+        documents += docs
+        nodes += ns
 
         # documents += self.provider_wiki_docs
 
-        return documents[:10], nodes
+        return documents, nodes
 
     def save(self, documents):
         self.store.add_documents(documents)

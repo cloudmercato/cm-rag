@@ -1,13 +1,13 @@
 import re
 import sys
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from llama_index.core import Settings
 from llama_index.core.output_parsers.selection import SelectionOutputParser
 
 from django.conf import settings
 
-from core.qengines import RouterManager
 from core.llm import OllamaManager
 
 REG_JSON = re.compile('({.*})', flags=re.MULTILINE)
@@ -32,6 +32,8 @@ def get_query_engine(
     temperature=settings.DEFAULT_TEMPERATURE,
     verbose=False,
 ):
+    from core.qengines import RouterManager
+
     ollama_manager = OllamaManager(
         model=ollama_model,
         temperature=temperature,
@@ -59,3 +61,12 @@ def get_query_engine(
     elif query_engine == 'kg-retriever':
         query_engine = router_manager.kg_manager.retriever_query_engine
     return query_engine
+
+
+def run_task(func, func_args):
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = {executor.submit(func, *args, **kwargs): None for args, kwargs in func_args}
+        results = []
+        for future in as_completed(futures):
+            results.append(future.result())
+        return results
